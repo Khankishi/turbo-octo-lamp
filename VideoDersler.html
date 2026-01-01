@@ -1,0 +1,1138 @@
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dərslik Platforması</title>
+  <style>
+    *{box-sizing:border-box}
+    :root{
+      --bg:#0b1020;
+      --bg2:#0e1630;
+      --card:#111a33;
+      --card2:#0f172a;
+      --border:rgba(255,255,255,.10);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.72);
+      --muted2:rgba(234,240,255,.55);
+      --accent:#22c55e;         /* progress green */
+      --accent2:rgba(34,197,94,.14);
+      --blue:#4f7cff;
+      --blue2:rgba(79,124,255,.18);
+      --orange:#f97316;
+      --shadow: 0 18px 55px rgba(0,0,0,.45);
+      --shadow2: 0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(900px 500px at 10% 10%, rgba(79,124,255,.25), transparent 55%),
+        radial-gradient(700px 420px at 90% 20%, rgba(249,115,22,.12), transparent 60%),
+        radial-gradient(800px 520px at 70% 90%, rgba(34,197,94,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    /* ===== Layout ===== */
+    .shell{
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      min-height:100vh;
+    }
+
+    /* ===== Sidebar ===== */
+    .sidebar{
+      position:sticky;
+      top:0;
+      height:100vh;
+      padding:16px;
+      border-right:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.18);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 12px;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px;
+      background: rgba(255,255,255,.06);
+      box-shadow: var(--shadow2);
+    }
+    .logo{
+      width:40px; height:40px;
+      border-radius:14px;
+      display:grid; place-items:center;
+      background: radial-gradient(120% 120% at 20% 10%, rgba(79,124,255,.9), rgba(34,197,94,.20));
+      border:1px solid rgba(255,255,255,.12);
+      font-weight:950;
+    }
+    .brand .t{ font-weight:950; letter-spacing:-.2px; }
+    .brand .s{ font-size:12px; color:var(--muted2); margin-top:2px; }
+
+    .nav{
+      margin-top:14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .nav a{
+      text-decoration:none;
+      color:var(--text);
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      transition:.14s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .nav a:hover{
+      transform: translateY(-1px);
+      border-color: rgba(79,124,255,.35);
+      box-shadow: 0 16px 34px rgba(0,0,0,.28);
+    }
+    .nav a.active{
+      border-color: rgba(79,124,255,.70);
+      background: rgba(79,124,255,.16);
+      box-shadow: 0 0 0 3px rgba(79,124,255,.16);
+    }
+    .nav .ico{ width:22px; text-align:center; opacity:.95; }
+    .nav .txt{ font-weight:850; letter-spacing:-.1px; }
+    .nav .sub{ margin-left:auto; font-size:12px; color:var(--muted2); }
+
+    .sideBox{
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      color:var(--muted);
+      line-height:1.55;
+    }
+    .sideBox b{ color:var(--text); }
+
+    /* ===== Main ===== */
+    .main{
+      padding:16px 16px 24px 16px;
+    }
+
+    .topbar{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: var(--shadow2);
+      position:sticky;
+      top:12px;
+      z-index:40;
+    }
+    .topbar-left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .hamburger{
+      display:none;
+      width:44px; height:40px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color:var(--text);
+      cursor:pointer;
+    }
+    .pageTitle{
+      font-weight:950;
+      letter-spacing:-.3px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .search{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:280px;
+      max-width:999px;
+      width:100%;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+    }
+    .search input{
+      width:100%;
+      border:0;
+      outline:0;
+      background: transparent;
+      color:var(--text);
+      font-size:14px;
+    }
+    .search input::placeholder{ color: rgba(234,240,255,.55); }
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color:var(--muted);
+      white-space:nowrap;
+    }
+
+    .content{
+      margin-top:16px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .panel{
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+    }
+    .head{
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.10);
+    }
+    .badge{
+      font-size:12px;
+      color:var(--muted);
+      padding:6px 10px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      white-space:nowrap;
+    }
+
+    /* ===== Home: Course grid ===== */
+    .grid{
+      padding:14px;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+    .course{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      box-shadow: 0 16px 34px rgba(0,0,0,.25);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      transition:.14s ease;
+      overflow:hidden;
+      position:relative;
+      min-height: 200px;
+    }
+    .course:hover{
+      transform: translateY(-1px);
+      border-color: rgba(79,124,255,.35);
+      box-shadow: 0 22px 44px rgba(0,0,0,.30);
+    }
+    .thumb{
+      height:90px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(120% 120% at 10% 10%, rgba(79,124,255,.55), transparent 55%),
+        radial-gradient(120% 120% at 90% 20%, rgba(34,197,94,.22), transparent 60%),
+        rgba(255,255,255,.06);
+    }
+    .course .h{
+      font-weight:950;
+      letter-spacing:-.2px;
+      margin-top:2px;
+    }
+    .course .m{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+    .meta{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .tag{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .prog{
+      margin-top:auto;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .bar{
+      width:100%;
+      height:10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .bar > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(34,197,94,.95), rgba(79,124,255,.85));
+      border-radius:999px;
+      transition: width .25s ease;
+    }
+    .progRow{
+      display:flex; justify-content:space-between; align-items:center;
+      color:var(--muted2);
+      font-size:12px;
+    }
+    .btnRow{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;
+    }
+    .btn{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:850;
+      transition:.14s ease;
+      user-select:none;
+    }
+    .btn.primary{
+      border-color: rgba(79,124,255,.55);
+      background: rgba(79,124,255,.16);
+      box-shadow: 0 0 0 3px rgba(79,124,255,.14);
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.24); }
+    .btn.primary:hover{ border-color: rgba(79,124,255,.75); }
+
+    /* ===== Video page ===== */
+    .app{
+      padding:14px;
+      display:grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap:12px;
+    }
+    .player{
+      position:relative;
+      width:100%;
+      aspect-ratio: 16 / 9;
+      background:#000;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+    }
+    .player iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+
+    .controls{
+      padding:12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.12);
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .controls .row{
+      grid-column: 1 / -1;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    input, select{
+      width:100%;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      outline:none;
+    }
+    input::placeholder{ color: rgba(234,240,255,.55); }
+
+    .list{ padding:12px; display:flex; flex-direction:column; gap:10px; }
+    .item{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      cursor:pointer;
+      transition:.14s ease;
+    }
+    .item:hover{
+      border-color: rgba(79,124,255,.35);
+      box-shadow: 0 16px 34px rgba(0,0,0,.25);
+      transform: translateY(-1px);
+    }
+    .item.active{
+      border-color: rgba(79,124,255,.75);
+      box-shadow: 0 0 0 3px rgba(79,124,255,.16);
+      background: rgba(79,124,255,.12);
+    }
+    .item .t{ font-weight:950; margin-bottom:6px; letter-spacing:-.2px; }
+    .item .d{ color:var(--muted2); font-size:13px; }
+
+    .empty{
+      padding:14px;
+      color:var(--muted);
+      border:1px dashed rgba(255,255,255,.22);
+      border-radius:16px;
+      background: rgba(255,255,255,.05);
+      text-align:center;
+    }
+
+    /* ===== Books/Apps ===== */
+    .gridSmall{
+      padding:14px;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:12px;
+    }
+    .card{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      box-shadow: 0 16px 34px rgba(0,0,0,.22);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-height: 170px;
+      transition:.14s ease;
+    }
+    .card:hover{
+      transform: translateY(-1px);
+      border-color: rgba(34,197,94,.30);
+      box-shadow: 0 22px 44px rgba(0,0,0,.28);
+    }
+    .card .h{ font-weight:950; letter-spacing:-.2px; }
+    .card .m{ color:var(--muted2); font-size:13px; }
+    .card .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:auto;
+    }
+    .linkBtn{
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+
+    /* ===== Pages ===== */
+    .page{ display:none; }
+    .page.active{ display:block; }
+
+    /* ===== Drawer (mobile sidebar) ===== */
+    .backdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      z-index:80;
+    }
+    .drawer{
+      position:fixed;
+      top:0; left:0;
+      height:100%;
+      width: 290px;
+      transform: translateX(-110%);
+      transition: transform .18s ease;
+      z-index:90;
+    }
+    .drawer.open{ transform: translateX(0); }
+    .backdrop.show{ display:block; }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1100px){
+      .grid{ grid-template-columns: repeat(2, 1fr); }
+      .gridSmall{ grid-template-columns: repeat(2, 1fr); }
+      .app{ grid-template-columns: 1fr; }
+      .search{ min-width: 180px; max-width: 420px; }
+    }
+    @media (max-width: 860px){
+      .shell{ grid-template-columns: 1fr; }
+      .sidebar{ display:none; }
+      .hamburger{ display:inline-flex; align-items:center; justify-content:center; }
+      .drawer{ display:block; }
+      .main{ padding:12px 12px 20px 12px; }
+      .topbar{ top:10px; }
+      .grid{ grid-template-columns: 1fr; }
+      .gridSmall{ grid-template-columns: 1fr; }
+      .search{ min-width: 0; max-width: none; }
+      .pill{ display:none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile drawer -->
+  <div id="backdrop" class="backdrop"></div>
+  <aside id="drawer" class="drawer">
+    <div class="sidebar" style="height:100vh; position:static;">
+      <div class="brand">
+        <div class="logo">🎓</div>
+        <div style="min-width:0;">
+          <div class="t">Dərslik Platforması</div>
+          <div class="s">Kurslar • Videolar • Kitablar</div>
+        </div>
+      </div>
+
+      <nav class="nav" id="drawerNav">
+        <a href="#home" data-page="home" class="active"><span class="ico">🏠</span><span class="txt">Home</span><span class="sub">Kurslar</span></a>
+        <a href="#video" data-page="video"><span class="ico">🎬</span><span class="txt">Video Dərslər</span><span class="sub">Playlist</span></a>
+        <a href="#books" data-page="books"><span class="ico">📚</span><span class="txt">Kitablar</span><span class="sub">PDF</span></a>
+        <a href="#apps" data-page="apps"><span class="ico">💻</span><span class="txt">Proqramlar</span><span class="sub">Link</span></a>
+      </nav>
+
+      <div class="sideBox">
+        <b>İpucu:</b> Mobil versiyada menyu “☰” ilə açılır.
+      </div>
+    </div>
+  </aside>
+
+  <div class="shell">
+
+    <!-- Desktop sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">🎓</div>
+        <div style="min-width:0;">
+          <div class="t">Dərslik Platforması</div>
+          <div class="s">Kurslar • Videolar • Kitablar</div>
+        </div>
+      </div>
+
+      <nav class="nav" id="sideNav">
+        <a href="#home" data-page="home" class="active"><span class="ico">🏠</span><span class="txt">Home</span><span class="sub">Kurslar</span></a>
+        <a href="#video" data-page="video"><span class="ico">🎬</span><span class="txt">Video Dərslər</span><span class="sub">Playlist</span></a>
+        <a href="#books" data-page="books"><span class="ico">📚</span><span class="txt">Kitablar</span><span class="sub">PDF</span></a>
+        <a href="#apps" data-page="apps"><span class="ico">💻</span><span class="txt">Proqramlar</span><span class="sub">Link</span></a>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button id="hamburger" class="hamburger" type="button">☰</button>
+          <div class="pageTitle" id="pageTitle">Home</div>
+        </div>
+
+        <div class="search" title="Axtarış (Home/Kitablar/Proqramlar)">
+          🔎 <input id="globalSearch" type="text" placeholder="Axtar (kurs/kitab/proqram)..." />
+        </div>
+
+        <div class="pill" id="topPill">Udemy-style</div>
+      </div>
+
+      <div class="content">
+
+        <!-- HOME -->
+        <section id="page-home" class="page active panel">
+          <div class="head">
+            <div style="font-weight:950;">Kurslar</div>
+            <div class="badge" id="homeBadge">—</div>
+          </div>
+
+          <div class="grid" id="courseGrid"></div>
+        </section>
+
+        <!-- VIDEO -->
+        <section id="page-video" class="page panel">
+          <div class="head">
+            <div style="font-weight:950;">Video Dərslər</div>
+            <div class="badge" id="nowBadge">—</div>
+          </div>
+
+          <div class="app">
+            <div>
+              <div class="player">
+                <iframe id="iframePlayer" src="" scrolling="no"
+                  allowfullscreen="true"
+                  allow="fullscreen; autoplay; encrypted-media; picture-in-picture"
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
+              </div>
+            </div>
+
+            <div class="panel" style="box-shadow:none;">
+              <div class="controls">
+                <input id="search" type="text" placeholder="Video axtar (başlıq / açıqlama)..." />
+                <select id="category"><option value="all">Bütün kateqoriyalar</option></select>
+
+                <div class="row">
+                  <select id="sort">
+                    <option value="id_asc">ID (artan)</option>
+                    <option value="id_desc">ID (azalan)</option>
+                    <option value="title_asc">Ad (A → Z)</option>
+                    <option value="title_desc">Ad (Z → A)</option>
+                  </select>
+                  <button id="resetBtn" class="btn">Sıfırla</button>
+                </div>
+              </div>
+
+              <div class="head" style="border-bottom:1px solid rgba(255,255,255,.10);">
+                <div id="nowTitle" style="font-weight:950; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:75%;">—</div>
+                <div class="badge" id="countBadge">0 video</div>
+              </div>
+              <div id="playlist" class="list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BOOKS -->
+        <section id="page-books" class="page panel">
+          <div class="head">
+            <div style="font-weight:950;">Kitablar</div>
+            <div class="badge" id="booksBadge">—</div>
+          </div>
+
+          <div class="controls">
+            <input id="bookSearch" type="text" placeholder="Kitab axtar (ad / müəllif / mövzu)..." />
+            <select id="bookCategory"><option value="all">Bütün kateqoriyalar</option></select>
+            <div class="row">
+              <select id="bookSort">
+                <option value="title_asc">Ad (A → Z)</option>
+                <option value="title_desc">Ad (Z → A)</option>
+              </select>
+              <button id="bookReset" class="btn">Sıfırla</button>
+            </div>
+          </div>
+
+          <div class="gridSmall" id="booksGrid"></div>
+        </section>
+
+        <!-- APPS -->
+        <section id="page-apps" class="page panel">
+          <div class="head">
+            <div style="font-weight:950;">Proqramlar</div>
+            <div class="badge" id="appsBadge">—</div>
+          </div>
+
+          <div class="controls">
+            <input id="appSearch" type="text" placeholder="Proqram axtar (ad / kateqoriya / təsvir)..." />
+            <select id="appCategory"><option value="all">Bütün kateqoriyalar</option></select>
+            <div class="row">
+              <select id="appSort">
+                <option value="title_asc">Ad (A → Z)</option>
+                <option value="title_desc">Ad (Z → A)</option>
+              </select>
+              <button id="appReset" class="btn">Sıfırla</button>
+            </div>
+          </div>
+
+          <div class="gridSmall" id="appsGrid"></div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ===== Drawer (mobile) =====
+    const drawer = document.getElementById("drawer");
+    const backdrop = document.getElementById("backdrop");
+    const hamburger = document.getElementById("hamburger");
+
+    function openDrawer(){
+      drawer.classList.add("open");
+      backdrop.classList.add("show");
+    }
+    function closeDrawer(){
+      drawer.classList.remove("open");
+      backdrop.classList.remove("show");
+    }
+    hamburger.addEventListener("click", openDrawer);
+    backdrop.addEventListener("click", closeDrawer);
+
+    // ===== Nav SPA (desktop + drawer) =====
+    const pageTitle = document.getElementById("pageTitle");
+
+    const pages = {
+      home: document.getElementById("page-home"),
+      video: document.getElementById("page-video"),
+      books: document.getElementById("page-books"),
+      apps: document.getElementById("page-apps"),
+    };
+
+    const sideNavLinks = Array.from(document.querySelectorAll('#sideNav a[data-page]'));
+    const drawerNavLinks = Array.from(document.querySelectorAll('#drawerNav a[data-page]'));
+    const allNavLinks = [...sideNavLinks, ...drawerNavLinks];
+
+    function setActiveNav(page){
+      allNavLinks.forEach(a => a.classList.toggle("active", a.dataset.page === page));
+    }
+
+    function go(page){
+      Object.values(pages).forEach(p => p.classList.remove("active"));
+      pages[page].classList.add("active");
+      setActiveNav(page);
+      pageTitle.textContent = page === "home" ? "Home" :
+                              page === "video" ? "Video Dərslər" :
+                              page === "books" ? "Kitablar" : "Proqramlar";
+      location.hash = page;
+      window.scrollTo({top:0, behavior:"instant"});
+      closeDrawer();
+    }
+
+    allNavLinks.forEach(a=>{
+      a.addEventListener("click", (e)=>{
+        e.preventDefault();
+        go(a.dataset.page);
+      });
+    });
+
+    const hash = (location.hash || "#home").replace("#","").trim();
+    go(pages[hash] ? hash : "home");
+
+    // ===== Video data (playlist) =====
+    const videos = [
+      { id:1, title:"§1. İnformatika və onun əsas anlayışları (3 VIDEO)", desc:"§1.1. İnformasiya və informatika.", category:"§1",
+        embedSrc:"https://go.screenpal.com/player/cOVVInnriBf?controls=1&share=1&download=1&embed=1&cl=1&width=1280&height=720&overlays=1&ff=1" },
+      { id:2, title:"§1. İnformatika və onun əsas anlayışları (3 VIDEO)", desc:"§1.2. İnformasiyanın kodlaşdırılması və informasiya ölçü vahidləri", category:"§1",
+        embedSrc:"https://go.screenpal.com/player/cOVVInnriBh?controls=1&share=1&download=1&embed=1&cl=1&width=1280&height=720&overlays=1&ff=1" },
+      { id:3, title:"§1. İnformatika və onun əsas anlayışları (3 VIDEO)", desc:"§1.3. Say sistemləri", category:"§1",
+        embedSrc:"https://go.screenpal.com/player/cOVVInnriB1?controls=1&share=1&download=1&embed=1&cl=1&width=1280&height=720&overlays=1&ff=1" },
+      { id:4, title:"§2. Kompyuterlər (3 VIDEO)", desc:"§2.1. EHM – in yaranma tarixi", category:"§2",
+        embedSrc:"https://go.screenpal.com/player/cOVVINnriCG?title=0&controls=1&a=1&share=1&download=1&embed=1&cl=1&width=1280&height=720&overlays=1&ff=1" },
+      { id:5, title:"§2. Kompyuterlər (3 VIDEO)", desc:"§2.2. Fərdi kompyuterin texniki təminatı – HARDWARE", category:"§2",
+        embedSrc:"https://go.screenpal.com/player/cOVVINnriCm?title=0&controls=1&a=1&share=1&download=1&embed=1&cl=1&width=1280&height=720&overlays=1&ff=1" },
+      { id:6, title:"§2. Kompyuterlər (3 VIDEO)", desc:"§2.3. Fərdi kompyuterlərin proqram təminatı – SOFTWARE", category:"§2",
+        embedSrc:"https://go.screenpal.com/player/cOVVINnriCH?title=0&controls=1&a=1&share=1&download=1&embed=1&cl=1&width=1280&height=720&overlays=1&ff=1" },
+      { id:7, title:"§3. Alqoritmləşdirmənin əsasları (1 VIDEO)", desc:"§3. Alqoritmləşdirmənin əsasları", category:"§3",
+        embedSrc:"https://go.screenpal.com/player/cOVV2LnrimM?title=0&controls=1&share=1&download=1&embed=1&cl=1&width=1280&height=720&overlays=1&ff=1" },
+      { id:8, title:"§4. Əməliyyat sistemləri (1 VIDEO)", desc:"§4. Əməliyyat sistemləri", category:"§4",
+        embedSrc:"https://go.screenpal.com/player/cOVVoQnriJ1?title=0&controls=1&share=1&download=1&embed=1&cl=1&width=1280&height=720&overlays=1&ff=1" },
+    ];
+
+    const iframe = document.getElementById("iframePlayer");
+    const playlistEl = document.getElementById("playlist");
+    const nowTitle = document.getElementById("nowTitle");
+    const nowBadge = document.getElementById("nowBadge");
+    const searchEl = document.getElementById("search");
+    const categoryEl = document.getElementById("category");
+    const sortEl = document.getElementById("sort");
+    const resetBtn = document.getElementById("resetBtn");
+    const countBadge = document.getElementById("countBadge");
+
+    let activeId = null;
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+    function setActive(id){
+      activeId = id;
+      document.querySelectorAll(".item").forEach(el => {
+        el.classList.toggle("active", Number(el.dataset.id) === id);
+      });
+    }
+    function loadVideo(v){
+      iframe.src = v.embedSrc;
+      nowTitle.textContent = v.title;
+      nowBadge.textContent = `#${v.id} • ${v.category || "—"}`;
+      setActive(v.id);
+    }
+    function initCategories(){
+      const cats = Array.from(new Set(videos.map(v => v.category).filter(Boolean))).sort();
+      for(const c of cats){
+        const opt = document.createElement("option");
+        opt.value = c; opt.textContent = c;
+        categoryEl.appendChild(opt);
+      }
+    }
+    function applyFilters(){
+      const q = searchEl.value.trim().toLowerCase();
+      const cat = categoryEl.value;
+      const sort = sortEl.value;
+
+      let list = videos.slice();
+      if(cat !== "all") list = list.filter(v => (v.category || "") === cat);
+      if(q){
+        list = list.filter(v =>
+          (v.title || "").toLowerCase().includes(q) ||
+          (v.desc || "").toLowerCase().includes(q)
+        );
+      }
+      list.sort((a,b) => {
+        if(sort === "id_asc") return (a.id ?? 0) - (b.id ?? 0);
+        if(sort === "id_desc") return (b.id ?? 0) - (a.id ?? 0);
+        const at = (a.title || "").toLowerCase();
+        const bt = (b.title || "").toLowerCase();
+        if(sort === "title_asc") return at.localeCompare(bt);
+        if(sort === "title_desc") return bt.localeCompare(at);
+        return 0;
+      });
+      return list;
+    }
+    function renderList(){
+      const list = applyFilters();
+      playlistEl.innerHTML = "";
+      countBadge.textContent = `${list.length} video`;
+
+      if(list.length === 0){
+        playlistEl.innerHTML = `<div class="empty">Uyğun video tapılmadı.</div>`;
+        return;
+      }
+
+      list.forEach(v => {
+        const item = document.createElement("div");
+        item.className = "item";
+        item.dataset.id = v.id;
+        item.innerHTML = `
+          <div class="t">${escapeHtml(v.title)}</div>
+          <div class="d">${escapeHtml(v.category ? (v.category + " • " + (v.desc || "")) : (v.desc || ""))}</div>
+        `;
+        item.addEventListener("click", () => loadVideo(v));
+        playlistEl.appendChild(item);
+      });
+
+      if(activeId !== null) setActive(activeId);
+    }
+
+    searchEl.addEventListener("input", renderList);
+    categoryEl.addEventListener("change", renderList);
+    sortEl.addEventListener("change", renderList);
+    resetBtn.addEventListener("click", () => {
+      searchEl.value = "";
+      categoryEl.value = "all";
+      sortEl.value = "id_asc";
+      renderList();
+    });
+
+    initCategories();
+    renderList();
+    loadVideo(videos[0]);
+
+    // ===== Courses (Home) =====
+// progress: default 0, persistent with localStorage
+const PROGRESS_KEY = "course_progress_v1";
+
+function loadProgressMap(){
+  try{
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(_){
+    return {};
+  }
+}
+function saveProgressMap(map){
+  try{
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(map));
+  }catch(_){}
+}
+function getProgress(id){
+  const map = loadProgressMap();
+  const val = Number(map[id]);
+  return Number.isFinite(val) ? Math.max(0, Math.min(100, val)) : 0;
+}
+function setProgress(id, val){
+  const map = loadProgressMap();
+  map[id] = Math.max(0, Math.min(100, Number(val) || 0));
+  saveProgressMap(map);
+}
+
+// demo progress values: (hamısı 0-dan başlayır)
+const courses = [
+  { id:"inf-1", title:"İnformatika — §1-§2", desc:"İnformasiya, kodlaşdırma, say sistemləri və kompüterlər.", tag:"İnformatika", lessons: 8, progress: 0 },
+  { id:"web-1", title:"Web Başlanğıc (HTML/CSS)", desc:"Əsas tag-lar, layout, responsive, mini praktika.", tag:"Web", lessons: 12, progress: 0 },
+  { id:"js-1", title:"JavaScript Praktika", desc:"DOM, event, array, fetch, mini proyektlər.", tag:"Web", lessons: 14, progress: 0 },
+  { id:"os-1", title:"Əməliyyat Sistemləri", desc:"Windows əsasları, fayl sistemi, ayarlar.", tag:"OS", lessons: 6, progress: 0 },
+  { id:"algo-1", title:"Alqoritmləşdirmə", desc:"Şərt, dövr, funksiyalar, massiv.", tag:"Alqoritm", lessons: 10, progress: 0 },
+  { id:"tools-1", title:"Faydalı Proqramlar", desc:"VS Code, Git, 7-Zip, browser və s.", tag:"Tools", lessons: 5, progress: 0 },
+];
+
+// saved progress varsa, 0-ın üstünə yazır (daimi yadda saxlanılan)
+courses.forEach(c => { c.progress = getProgress(c.id); });
+
+const courseGrid = document.getElementById("courseGrid");
+const homeBadge = document.getElementById("homeBadge");
+
+function renderCourses(filterText=""){
+  const q = filterText.trim().toLowerCase();
+  let list = courses.slice();
+  if(q){
+    list = list.filter(c =>
+      (c.title||"").toLowerCase().includes(q) ||
+      (c.desc||"").toLowerCase().includes(q) ||
+      (c.tag||"").toLowerCase().includes(q)
+    );
+  }
+
+  homeBadge.textContent = `${list.length} kurs`;
+  courseGrid.innerHTML = "";
+
+  if(!list.length){
+    courseGrid.innerHTML = `<div class="empty" style="grid-column:1/-1">Uyğun kurs tapılmadı.</div>`;
+    return;
+  }
+
+  list.forEach(c=>{
+    const el = document.createElement("div");
+    el.className = "course";
+    el.innerHTML = `
+      <div class="thumb"></div>
+      <div class="h">${escapeHtml(c.title)}</div>
+      <div class="m">${escapeHtml(c.desc)}</div>
+      <div class="meta">
+        <span class="tag">📌 ${escapeHtml(c.tag)}</span>
+        <span class="tag">🎥 ${c.lessons} dərs</span>
+      </div>
+      <div class="prog">
+        <div class="progRow">
+          <span>Progress</span>
+          <span>${c.progress}%</span>
+        </div>
+        <div class="bar"><div style="width:${c.progress}%"></div></div>
+
+        <div class="btnRow">
+          <button class="btn primary" data-go="video">Dərslərə keç</button>
+          <button class="btn" data-inc="${c.id}">+5%</button>
+          <button class="btn" data-dec="${c.id}">-5%</button>
+        </div>
+      </div>
+    `;
+
+    // buttons
+    el.querySelector('[data-go="video"]').addEventListener("click", ()=> go("video"));
+    el.querySelector(`[data-inc="${c.id}"]`).addEventListener("click", ()=>{
+      c.progress = Math.min(100, c.progress + 5);
+      setProgress(c.id, c.progress);
+      renderCourses(globalSearch.value);
+    });
+    el.querySelector(`[data-dec="${c.id}"]`).addEventListener("click", ()=>{
+      c.progress = Math.max(0, c.progress - 5);
+      setProgress(c.id, c.progress);
+      renderCourses(globalSearch.value);
+    });
+
+    courseGrid.appendChild(el);
+  });
+}
+
+
+    // ===== Books =====
+    const books = [
+      { title:"İnformatika 7-ci sinif (PDF)", author:"—", category:"İnformatika", desc:"Mövzular: informasiya, sistemlər, kompüter.", url:"#", type:"PDF" },
+      { title:"HTML & CSS Başlanğıc", author:"—", category:"Web", desc:"HTML tag-lar, CSS əsasları, praktika.", url:"#", type:"PDF" },
+      { title:"JavaScript Praktika", author:"—", category:"Web", desc:"DOM, event, array, fetch, mini-proyektlər.", url:"#", type:"PDF" },
+      { title:"Algoritmlər Qısa Bələdçi", author:"—", category:"Alqoritm", desc:"Şərt, dövr, massiv, funksiyalar.", url:"#", type:"PDF" },
+      { title:"Ofis proqramları", author:"—", category:"Ofis", desc:"Word/Excel/PowerPoint əsasları.", url:"#", type:"PDF" },
+      { title:"Windows əsasları", author:"—", category:"OS", desc:"Quraşdırma, sistem ayarları, fayl sistemi.", url:"#", type:"PDF" },
+    ];
+
+    const bookSearch = document.getElementById("bookSearch");
+    const bookCategory = document.getElementById("bookCategory");
+    const bookSort = document.getElementById("bookSort");
+    const bookReset = document.getElementById("bookReset");
+    const booksGrid = document.getElementById("booksGrid");
+
+    function initBookCategories(){
+      const cats = Array.from(new Set(books.map(b=>b.category).filter(Boolean))).sort();
+      cats.forEach(c=>{
+        const opt = document.createElement("option");
+        opt.value = c; opt.textContent = c;
+        bookCategory.appendChild(opt);
+      });
+    }
+
+    function bookFiltered(){
+      const q = bookSearch.value.trim().toLowerCase();
+      const cat = bookCategory.value;
+      const sort = bookSort.value;
+      let list = books.slice();
+
+      if(cat !== "all") list = list.filter(b=> (b.category||"")===cat);
+      if(q){
+        list = list.filter(b =>
+          (b.title||"").toLowerCase().includes(q) ||
+          (b.author||"").toLowerCase().includes(q) ||
+          (b.desc||"").toLowerCase().includes(q)
+        );
+      }
+      list.sort((a,b)=>{
+        const at=(a.title||"").toLowerCase();
+        const bt=(b.title||"").toLowerCase();
+        return sort==="title_desc" ? bt.localeCompare(at) : at.localeCompare(bt);
+      });
+      return list;
+    }
+
+    function renderBooks(){
+      const list = bookFiltered();
+      document.getElementById("booksBadge").textContent = `${list.length} kitab`;
+      booksGrid.innerHTML = "";
+      if(!list.length){
+        booksGrid.innerHTML = `<div class="empty" style="grid-column:1/-1">Uyğun kitab tapılmadı.</div>`;
+        return;
+      }
+      list.forEach(b=>{
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `
+          <div class="h">${escapeHtml(b.title)}</div>
+          <div class="m">${escapeHtml(b.author || "—")} • ${escapeHtml(b.category || "—")}</div>
+          <div class="m">${escapeHtml(b.desc || "")}</div>
+          <div class="row">
+            <span class="tag">${escapeHtml(b.type || "Link")}</span>
+            <a class="btn linkBtn" href="${b.url}" target="_blank" rel="noopener">Aç ↗</a>
+          </div>
+        `;
+        booksGrid.appendChild(el);
+      });
+    }
+
+    // ===== Apps =====
+    const apps = [
+      { title:"Visual Studio Code", category:"IDE", desc:"HTML/CSS/JS üçün rahat editor.", url:"https://code.visualstudio.com/", tag:"Windows" },
+      { title:"Google Chrome", category:"Browser", desc:"Web test üçün ən rahat brauzer.", url:"https://www.google.com/chrome/", tag:"Windows" },
+      { title:"OBS Studio", category:"Video", desc:"Ekran yazmaq və canlı yayım.", url:"https://obsproject.com/", tag:"Windows" },
+      { title:"Python", category:"Dev", desc:"Backend və avtomatizasiya üçün.", url:"https://www.python.org/downloads/", tag:"Windows" },
+      { title:"7-Zip", category:"Utility", desc:"Arxiv açma və sıxışdırma.", url:"https://www.7-zip.org/", tag:"Windows" },
+      { title:"Git", category:"Dev", desc:"Versiya nəzarəti (Github).", url:"https://git-scm.com/downloads", tag:"Windows" },
+    ];
+
+    const appSearch = document.getElementById("appSearch");
+    const appCategory = document.getElementById("appCategory");
+    const appSort = document.getElementById("appSort");
+    const appReset = document.getElementById("appReset");
+    const appsGrid = document.getElementById("appsGrid");
+
+    function initAppCategories(){
+      const cats = Array.from(new Set(apps.map(a=>a.category).filter(Boolean))).sort();
+      cats.forEach(c=>{
+        const opt = document.createElement("option");
+        opt.value=c; opt.textContent=c;
+        appCategory.appendChild(opt);
+      });
+    }
+
+    function appFiltered(){
+      const q = appSearch.value.trim().toLowerCase();
+      const cat = appCategory.value;
+      const sort = appSort.value;
+      let list = apps.slice();
+
+      if(cat !== "all") list = list.filter(a=> (a.category||"")===cat);
+      if(q){
+        list = list.filter(a =>
+          (a.title||"").toLowerCase().includes(q) ||
+          (a.desc||"").toLowerCase().includes(q) ||
+          (a.category||"").toLowerCase().includes(q)
+        );
+      }
+      list.sort((a,b)=>{
+        const at=(a.title||"").toLowerCase();
+        const bt=(b.title||"").toLowerCase();
+        return sort==="title_desc" ? bt.localeCompare(at) : at.localeCompare(bt);
+      });
+      return list;
+    }
+
+    function renderApps(){
+      const list = appFiltered();
+      document.getElementById("appsBadge").textContent = `${list.length} proqram`;
+      appsGrid.innerHTML = "";
+      if(!list.length){
+        appsGrid.innerHTML = `<div class="empty" style="grid-column:1/-1">Uyğun proqram tapılmadı.</div>`;
+        return;
+      }
+      list.forEach(a=>{
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `
+          <div class="h">${escapeHtml(a.title)}</div>
+          <div class="m">${escapeHtml(a.category || "—")} • ${escapeHtml(a.tag || "—")}</div>
+          <div class="m">${escapeHtml(a.desc || "")}</div>
+          <div class="row">
+            <span class="tag">${escapeHtml(a.category || "Link")}</span>
+            <a class="btn linkBtn" href="${a.url}" target="_blank" rel="noopener">Yüklə / Aç ↗</a>
+          </div>
+        `;
+        appsGrid.appendChild(el);
+      });
+    }
+
+    // ===== Global search affects home/books/apps depending on active page =====
+    const globalSearch = document.getElementById("globalSearch");
+
+    function activePage(){
+      return Object.entries(pages).find(([k,el]) => el.classList.contains("active"))?.[0] || "home";
+    }
+
+    globalSearch.addEventListener("input", ()=>{
+      const page = activePage();
+      if(page === "home") renderCourses(globalSearch.value);
+      if(page === "books"){ bookSearch.value = globalSearch.value; renderBooks(); }
+      if(page === "apps"){ appSearch.value = globalSearch.value; renderApps(); }
+    });
+
+    // Init books/apps dropdowns
+    initBookCategories();
+    initAppCategories();
+
+    // Books events
+    bookSearch.addEventListener("input", renderBooks);
+    bookCategory.addEventListener("change", renderBooks);
+    bookSort.addEventListener("change", renderBooks);
+    bookReset.addEventListener("click", ()=>{
+      bookSearch.value="";
+      bookCategory.value="all";
+      bookSort.value="title_asc";
+      renderBooks();
+    });
+
+    // Apps events
+    appSearch.addEventListener("input", renderApps);
+    appCategory.addEventListener("change", renderApps);
+    appSort.addEventListener("change", renderApps);
+    appReset.addEventListener("click", ()=>{
+      appSearch.value="";
+      appCategory.value="all";
+      appSort.value="title_asc";
+      renderApps();
+    });
+
+    // Render all
+    renderCourses("");
+    renderBooks();
+    renderApps();
+  </script>
+</body>
+</html>
